@@ -1,0 +1,93 @@
+create database empresa1810;
+
+create table departamento (
+	id int auto_increment PRIMARY KEY not null,
+    nome varchar(30) not null    
+);
+
+create table funcionario (
+	id int auto_increment PRIMARY KEY not null,
+    salario decimal(10,2),
+    nome varchar(30) not null,
+    id_dep int not null,
+	foreign key (id_dep) references departamento(id)
+);
+
+create table dependente (
+	id int auto_increment PRIMARY KEY not null,
+    nome varchar(30) not null,
+    id_func int not null,
+	foreign key (id_func) references funcionario(id)
+);
+
+-- -----------------------------------------------------------
+
+insert into departamento (nome) 
+ VALUES 
+('Minecraft'),
+('Pokemon'),
+('Yugioh'),
+('Dragon Ball');
+
+insert into funcionario (salario, nome, id_dep)
+ VALUES
+(3500.00, 'Fellipe', 1),
+(4500.00, 'Caio', 2),
+(3000.00, 'Nicolle', 3),
+(40.00, 'Julio', 2),
+(1200.00, 'Rudrian', 4);
+
+insert into dependente (nome, id_func)
+ VALUES
+('Vivian', 1),
+('Adalto', 2),
+('Adriano', 3),
+('Deiviny', 4),
+('Fabio', 5);
+
+select * from dependente;
+
+-- Funcionários que possuem + de 2 dependentes
+
+select funcionario.id, funcionario.nome, funcionario.salario, COUNT(dependente.id) AS total_dependentes
+from funcionario
+left join dependente ON funcionario.id = dependente.id_func
+group by funcionario.id, funcionario.nome, funcionario.salario
+having COUNT(dependente.id) > 2;
+
+--  Mostre os departamentos e os respectivos funcionários em ordem alfabética.
+select departamento.nome AS departamento, funcionario.nome AS funcionario
+from departamento
+left join funcionario ON departamento.id = funcionario.id_dep
+order by departamento.nome, funcionario.nome;
+
+--  Listar os funcionários que possuem dependente e os que não possuem dependentes.
+select funcionario.nome AS funcionario, 
+COUNT(dependente.id) AS total_dependentes
+from funcionario
+left join dependente ON funcionario.id = dependente.id_func
+group by funcionario.id, funcionario.nome;
+
+--  Mostrar a média salarial dos departamentos.
+select departamento.nome AS departamento, AVG(funcionario.salario) AS media_salarial
+from departamento
+left join funcionario ON departamento.id = funcionario.id_dep
+group by departamento.id, departamento.nome;
+
+-- Listar os departamentos que possuem e não possuem funcionários.
+select departamento.nome AS departamento,
+COUNT(funcionario.id) AS total_funcionarios
+from departamento
+left join funcionario ON departamento.id = funcionario.id_dep
+group by departamento.id, departamento.nome;
+
+-- Quanto a empresa paga por mês de salários?
+select SUM(funcionario.salario) AS total_salarios
+from funcionario;
+
+-- Quanto custa cada setor?
+select departamento.nome AS departamento, SUM(funcionario.salario) AS custo_setor
+from departamento
+left join funcionario ON departamento.id = funcionario.id_dep
+group by departamento.id, departamento.nome;
+
