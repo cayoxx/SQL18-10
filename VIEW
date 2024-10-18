@@ -1,0 +1,83 @@
+create database BD3;
+
+create table funcionarios (
+		cod_func int auto_increment PRIMARY KEY not null,
+        nome varchar(30) not null,
+        especialidade varchar(50) not null
+);
+create table dependente (
+		cod_dep int auto_increment PRIMARY KEY not null,
+        nome varchar(30) not null,
+        cod_func int not null,
+     	foreign key (cod_func) references funcionarios(cod_func)
+);
+
+insert into funcionarios(nome,especialidade)
+	values
+    ("Elizabeti", "Campista"),
+    ("Rudrian", "Raquete"),
+    ("Bolinha", "Mesa");
+    
+insert into dependente(nome, cod_func)
+	values
+    ("Caio",1),
+    ("Julio",2),
+	("Fellipe",3);
+
+-- Criar view
+create view vw_lista_funcionario as
+select nome, especialidade
+from funcionarios;
+
+-- Utilizando View
+select * from vw_lista_funcionario;
+
+-- Dependente
+create view vw_lista_dependentes as
+select nome
+from dependente;
+
+select * from vw_lista_dependentes;
+
+create view vw_lista_funcionario_com_dependente_inner as
+select 
+    funcionarios.nome as func_nome, 
+    dependente.nome as dep_nome
+from funcionarios
+inner join dependente 
+on funcionarios.cod_func = dependente.cod_func;
+
+create view vw_lista_funcionario_com_dependente_left as
+select 
+    funcionarios.nome as func_nome, 
+    dependente.nome as dep_nome
+from funcionarios
+left join dependente 
+on funcionarios.cod_func = dependente.cod_func;
+
+create view vw_lista_funcionario_com_dependente_right as
+select 
+    funcionarios.nome as func_nome, 
+    dependente.nome as dep_nome
+from funcionarios
+right join dependente 
+on funcionarios.cod_func = dependente.cod_func;
+
+create view vw_lista_funcionario_com_dependente_excluding_left as
+select 
+    funcionarios.nome as func_nome
+from funcionarios
+left join dependente 
+on funcionarios.cod_func = dependente.cod_func
+where dependente.cod_dep is null;
+
+create view vw_lista_funcionario_com_dependente_excluding_right as
+select 
+    dependente.nome as dep_nome
+from dependente
+right join funcionarios 
+on dependente.cod_func = funcionarios.cod_func
+where funcionarios.cod_func is null;
+
+
+
